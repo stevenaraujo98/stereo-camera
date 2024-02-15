@@ -13,6 +13,8 @@ capturing = False
 
 CONST_WIDTH = 1920 # 1280 # default 320
 CONST_HEIGHT = 1080 # 720 # -> 480 # default 240
+# CONST_WIDTH = 1280 # default 320
+# CONST_HEIGHT = 720 # -> 480 # default 240
 
 cap.set(cv.CAP_PROP_FRAME_WIDTH, CONST_WIDTH)
 cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
@@ -25,17 +27,20 @@ while True:
         print("Can't receive frame (stream end?). Exiting ...")
         break
 
-    print(frame.shape)  # (240, 640, 3) # (480, 1280, 3) # (600, 1600, 3)
-    left = frame[:, :640]
-    right = frame[:, 640:]
+    print(frame.shape)
+    # (240, 640, 3) 
+    # (480, 1280, 3) 
+    # (600, 1600, 3)
+    left = frame[:, :frame.shape[1]//2]
+    right = frame[:, frame.shape[1]//2:]
 
     # Our operations on the frame come here
     # gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
     # Display the resulting frame
     cv.imshow('frame', frame)
-    cv.imshow('left', left)
-    cv.imshow('right', right)
+    cv.imshow('left', cv.rotate(left, cv.ROTATE_180))
+    cv.imshow('right', cv.rotate(right, cv.ROTATE_180))
 
     key = cv.waitKey(1)
     if key == ord('q'):
