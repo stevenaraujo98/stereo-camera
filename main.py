@@ -4,11 +4,18 @@ from datetime import datetime
 # from matplotlib import pyplot as plt
 
 cap = cv.VideoCapture(0)
+# cap_2 = cv.VideoCapture(1)
 if not cap.isOpened():
     print("Cannot open camera")
     exit()
 
 capturing = False
+
+CONST_WIDTH = 1920 # 1280 # default 320
+CONST_HEIGHT = 1080 # 720 # -> 480 # default 240
+
+cap.set(cv.CAP_PROP_FRAME_WIDTH, CONST_WIDTH)
+cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
 
 while True:
     # Capture frame-by-frame
@@ -18,9 +25,9 @@ while True:
         print("Can't receive frame (stream end?). Exiting ...")
         break
 
-    # print(frame.shape)  # 240, 640, 3
-    left = frame[:, :320] # 240x320
-    right = frame[:, 320:] # 240x320
+    print(frame.shape)  # (240, 640, 3) # (480, 1280, 3) # (600, 1600, 3)
+    left = frame[:, :640]
+    right = frame[:, 640:]
 
     # Our operations on the frame come here
     # gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
