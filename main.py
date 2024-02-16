@@ -10,6 +10,7 @@ if not cap.isOpened():
     exit()
 
 capturing = False
+videoRecording = False
 
 # default y minima resolucion 320 x 240
 # maxima resolucion 1920 x 1080
@@ -28,6 +29,10 @@ CONST_WIDTH = 1921*2 # 640
 
 cap.set(cv.CAP_PROP_FRAME_WIDTH, CONST_WIDTH)
 # cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
+frame_width = int(cap.get(3)) // 2
+frame_height = int(cap.get(4))
+size = (frame_width, frame_height)
+fps = cap.get(cv.CAP_PROP_FPS)
 
 while True:
     # Capture frame-by-frame
@@ -39,16 +44,20 @@ while True:
         break
 
     # print(frame.shape)
-    left = frame[:, :frame.shape[1]//2]
-    right = frame[:, frame.shape[1]//2:]
+    left = frame[:, :frame_width]
+    right = frame[:, frame_width:]
 
     # Our operations on the frame come here
     # gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
     # Display the resulting frame
     cv.imshow('frame', frame)
-    cv.imshow('left', left)
-    cv.imshow('right', right)
+    # cv.imshow('left', left)
+    # cv.imshow('right', right)
+    if videoRecording:
+        salida_L.write(left)
+        salida_R.write(right)
+
 
     key = cv.waitKey(1)
     if key == ord('q'):
@@ -58,6 +67,22 @@ while True:
         # Capture
         print("Capturing image...")
         capturing = True
+    elif key == ord('v'):
+        # Capture
+        print("Capturing Video...")
+        videoRecording = not videoRecording
+        if videoRecording:
+            now = datetime.now()
+            date_time = now.strftime("./videos/%H_%M_%S_%d_%m_%Y")
+            file_name = f"{date_time}_VIDEO"
+            # 30.0 fps
+            salida_L = cv.VideoWriter(file_name + '_LEFT.mp4',cv.VideoWriter_fourcc(*'MP4V'), 20.0, size)
+            salida_R = cv.VideoWriter(file_name + '_RIGHT.mp4',cv.VideoWriter_fourcc(*'MP4V'), 20.0, size)
+        else: 
+            print("video finish")
+            salida_L.release()
+            salida_R.release()
+
 
     if capturing:
         now = datetime.now()
@@ -68,6 +93,7 @@ while True:
         cv.imwrite(file_name + "_RIGHT.jpg", right)
         print(f"Image captured and saved as {file_name}")
         capturing = False
+
 
 cap.release()
 cv.destroyAllWindows()
