@@ -11,26 +11,34 @@ if not cap.isOpened():
 
 capturing = False
 
-CONST_WIDTH = 1920 # 1280 # default 320
-CONST_HEIGHT = 1080 # 720 # -> 480 # default 240
-# CONST_WIDTH = 1280 # default 320
-# CONST_HEIGHT = 720 # -> 480 # default 240
+# default y minima resolucion 320 x 240
+# maxima resolucion 1920 x 1080
+#        cada lente  = total
+# 8K     7680 x 4320 = NO
+# 4K     3840 x 2160 = NO
+# 2K     2560 x 1440 = NO
+# FULLHD 1920 x 1080 = 3840 x 1080 => 1920
+# HD     1280 × 720  = 2560 x 720  => 1280
+# SD     854 × 480   = 1600 x 600  => 800
+# SD     640 x 360   = 1280 x 480  => 640
+# SD     426 × 240   = 640 x 240   => 320
+
+CONST_WIDTH = 1921*2 # 640
+# CONST_HEIGHT = 1080 # 480
 
 cap.set(cv.CAP_PROP_FRAME_WIDTH, CONST_WIDTH)
-cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
+# cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
 
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
+    frame = cv.rotate(frame, cv.ROTATE_180)
     # if frame is read correctly ret is True
     if not ret:
         print("Can't receive frame (stream end?). Exiting ...")
         break
 
-    print(frame.shape)
-    # (240, 640, 3) 
-    # (480, 1280, 3) 
-    # (600, 1600, 3)
+    # print(frame.shape)
     left = frame[:, :frame.shape[1]//2]
     right = frame[:, frame.shape[1]//2:]
 
@@ -39,13 +47,12 @@ while True:
 
     # Display the resulting frame
     cv.imshow('frame', frame)
-    cv.imshow('left', cv.rotate(left, cv.ROTATE_180))
-    cv.imshow('right', cv.rotate(right, cv.ROTATE_180))
+    cv.imshow('left', left)
+    cv.imshow('right', right)
 
     key = cv.waitKey(1)
     if key == ord('q'):
         # Close
-        print(ord('c'))
         break
     elif key == ord('c'):
         # Capture
