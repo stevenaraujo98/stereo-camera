@@ -1,9 +1,10 @@
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import ttk
 import cv2
 import PIL.Image
 import PIL.ImageTk
-from utils.themes import Theme
+from datetime import datetime
+from utils.consts import PATH_SAVE
 
 class App(tk.Tk):
     def __init__(self, video_source=0):
@@ -14,6 +15,8 @@ class App(tk.Tk):
         self.geometry(f'{self.screen_width}x{self.screen_height}')
         # self.config(bg=Theme.BACKGROUND)
         self.vid = None
+        self.record_video = False  # Variable para indicar si se debe grabar video
+        self.video_writer = None  # Variable para el escritor de video
         self.__launch_dialog()
 
     def __launch_dialog(self):
@@ -45,7 +48,8 @@ class App(tk.Tk):
         self.button.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         
     def checkbox_clicked(self):
-        print(self.checkbox_value.get())
+        self.record_video = self.checkbox_value.get()
+        print("Grabar video:", self.record_video)
     
     def start_camera(self):        
         list_size = self.combo.get().split("x")
@@ -92,17 +96,35 @@ class App(tk.Tk):
     def snapshot(self):
         ret, frame = self.vid.read()
         if ret:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            cv2.imwrite("snapshot.png", cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+            now = datetime.now()
+            date_time = now.strftime(PATH_SAVE + "imgs/%H_%M_%S_%d_%m_%Y")
+            file_name = f"{date_time}_IMG"
+            # cv2.imwrite(file_name + "_LEFT.jpg", left)
+            # cv2.imwrite(file_name + "_RIGHT.jpg", right)
+
+            print(f"Image captured and saved as {file_name}")
+            cv2.imwrite(file_name + ".jpg", frame)
             print("Snapshot saved as snapshot.png")
 
     def update_camera(self):
         ret, frame = self.vid.read()
         if ret:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            self.photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
+            # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            self.photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
             self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
             self.canvas_2.create_image(0, 0, image=self.photo, anchor=tk.NW)
+
+            # Si se debe grabar video, guarda el fotograma en el archivo de video
+            if self.record_video:
+                if self.video_writer is None:
+                    # Crea el escritor de video si aún no se ha creado
+                    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+                    self.video_writer = cv2.VideoWriter('output.avi', fourcc, 20.0, (frame.shape[1], frame.shape[0]))
+
+                # Escribe el fotograma en el archivo de video
+                self.video_writer.write(frame)
 
         self.after_id = self.after(10, self.update_camera) #10 milisegundos
 
@@ -116,6 +138,12 @@ class App(tk.Tk):
         
         if self.after_id:
             self.after_cancel(self.after_id)
+
+        # Detener la grabación de video si está en curso
+        if self.video_writer is not None:
+            self.video_writer.release()
+            self.video_writer = None
+            self.record_video = False
 
         # Volver a mostrar los widgets de configuración
         self.__launch_dialog()
