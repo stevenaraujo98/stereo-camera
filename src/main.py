@@ -2,15 +2,16 @@ import numpy as np
 import cv2 as cv
 from datetime import datetime
 # from matplotlib import pyplot as plt
+from gui.gui import App
+import tkinter as tk
 
-cap = cv.VideoCapture(0)
-# cap_2 = cv.VideoCapture(1)
-if not cap.isOpened():
-    print("Cannot open camera")
-    exit()
 
+'''
 capturing = False
 videoRecording = False
+CONST_WIDTH = 1921*2  # 640
+# CONST_HEIGHT = 1080 # 480
+path_save = "./assets/"
 
 # default y minima resolucion 320 x 240
 # maxima resolucion 1920 x 1080
@@ -24,8 +25,11 @@ videoRecording = False
 # SD     640 x 360   = 1280 x 480  => 640
 # SD     426 × 240   = 640 x 240   => 320
 
-CONST_WIDTH = 1921*2 # 640
-# CONST_HEIGHT = 1080 # 480
+cap = cv.VideoCapture(0)
+# cap_2 = cv.VideoCapture(1)
+if not cap.isOpened():
+    print("Cannot open camera")
+    exit()
 
 cap.set(cv.CAP_PROP_FRAME_WIDTH, CONST_WIDTH)
 # cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
@@ -58,7 +62,6 @@ while True:
         salida_L.write(left)
         salida_R.write(right)
 
-
     key = cv.waitKey(1)
     if key == ord('q'):
         # Close
@@ -73,20 +76,21 @@ while True:
         videoRecording = not videoRecording
         if videoRecording:
             now = datetime.now()
-            date_time = now.strftime("./videos/%H_%M_%S_%d_%m_%Y")
+            date_time = now.strftime(path_save + "videos/%H_%M_%S_%d_%m_%Y")
             file_name = f"{date_time}_VIDEO"
             # 30.0 fps
-            salida_L = cv.VideoWriter(file_name + '_LEFT.mp4',cv.VideoWriter_fourcc(*'MP4V'), 20.0, size)
-            salida_R = cv.VideoWriter(file_name + '_RIGHT.mp4',cv.VideoWriter_fourcc(*'MP4V'), 20.0, size)
-        else: 
+            salida_L = cv.VideoWriter(
+                file_name + '_LEFT.mp4', cv.VideoWriter_fourcc(*'MP4V'), 20.0, size)
+            salida_R = cv.VideoWriter(
+                file_name + '_RIGHT.mp4', cv.VideoWriter_fourcc(*'MP4V'), 20.0, size)
+        else:
             print("video finish")
             salida_L.release()
             salida_R.release()
 
-
     if capturing:
         now = datetime.now()
-        date_time = now.strftime("./imgs/%H_%M_%S_%d_%m_%Y")
+        date_time = now.strftime(path_save + "imgs/%H_%M_%S_%d_%m_%Y")
         file_name = f"{date_time}_IMG"
         cv.imwrite(file_name + ".jpg", frame)
         cv.imwrite(file_name + "_LEFT.jpg", left)
@@ -97,3 +101,8 @@ while True:
 
 cap.release()
 cv.destroyAllWindows()
+'''
+
+# Create a window and pass it to the Application object
+app = App()
+app.mainloop()
