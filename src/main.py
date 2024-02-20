@@ -47,7 +47,7 @@ while True:
         break
 
     frame = cv.rotate(frame, cv.ROTATE_180)
-    
+
     # print(frame.shape)
     left = frame[:, :frame_width]
     right = frame[:, frame_width:]
@@ -81,9 +81,9 @@ while True:
             file_name = f"{date_time}_VIDEO"
             # 30.0 fps
             salida_L = cv.VideoWriter(
-                file_name + '_LEFT.mp4', cv.VideoWriter_fourcc(*'MP4V'), 20.0, size)
+                file_name + '_LEFT.avi', cv.VideoWriter_fourcc(*'XVID'), 20.0, size)
             salida_R = cv.VideoWriter(
-                file_name + '_RIGHT.mp4', cv.VideoWriter_fourcc(*'MP4V'), 20.0, size)
+                file_name + '_RIGHT.avi', cv.VideoWriter_fourcc(*'XVID'), 20.0, size)
         else:
             print("video finish")
             salida_L.release()
