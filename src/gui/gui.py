@@ -24,19 +24,24 @@ class App(tk.Tk):
         self.first_panel.pack(expand=True, anchor=tk.N)
 
         # Textos
+        self.title1 = tk.Label(self.first_panel, text="ROBOT VISION SYSTEM", font=('Helvetica', 24, 'bold'), fg='#EA6749')
+        self.title1.grid(row=0, column=0, columnspan=2, padx=5, pady=10)
+        self.title2 = tk.Label(self.first_panel, text="STEREO VISION", font=('Helvetica', 20, 'bold'), fg="#C42E0B")
+        self.title2.grid(row=1, column=0, columnspan=2, padx=5, pady=10)
+
         self.texto1 = tk.Label(self.first_panel, text="Configuración de cámara", font=16)
-        self.texto1.grid(row=0, column=0, columnspan=2, padx=5, pady=10)
+        self.texto1.grid(row=2, column=0, columnspan=2, padx=5, pady=10)
 
         self.texto2 = tk.Label(self.first_panel, text="Resolución:", font=12)
-        self.texto2.grid(row=1, column=0, padx=5, pady=5, sticky="e")
+        self.texto2.grid(row=3, column=0, padx=5, pady=5, sticky="e")
 
         self.combo = ttk.Combobox(self.first_panel, state="readonly", values=["1920x1080", "1280x720", "800x600", "640x480", "320x240"], font=12)
         self.combo.set("1920x1080")
-        self.combo.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+        self.combo.grid(row=3, column=1, padx=5, pady=5, sticky="w")
 
         self.checkbox_value = tk.BooleanVar(self.first_panel)
         self.checkbox = tk.Checkbutton(self.first_panel, text="Grabar video", variable=self.checkbox_value, command=self.checkbox_clicked, font=12, padx=0)
-        self.checkbox.grid(row=2, column=0, columnspan=2, pady=5, sticky="w")
+        self.checkbox.grid(row=4, column=0, columnspan=2, pady=5, sticky="w")
 
         self.button = tk.Button(
             self.first_panel,
@@ -45,7 +50,7 @@ class App(tk.Tk):
             command=self.start_camera,
             font=12
         )
-        self.button.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+        self.button.grid(row=5, column=0, columnspan=2, padx=5, pady=5)
         
     def checkbox_clicked(self):
         self.record_video = self.checkbox_value.get()
