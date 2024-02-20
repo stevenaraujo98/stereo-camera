@@ -3,8 +3,7 @@ from tkinter import ttk
 import cv2
 import PIL.Image
 import PIL.ImageTk
-from datetime import datetime
-from utils.consts import PATH_SAVE
+from camera import process, get_name
 
 class App(tk.Tk):
     def __init__(self, video_source=0):
@@ -16,7 +15,8 @@ class App(tk.Tk):
         # self.config(bg=Theme.BACKGROUND)
         self.vid = None
         self.record_video = False  # Variable para indicar si se debe grabar video
-        self.video_writer = None  # Variable para el escritor de video
+        self.video_writer_left = None  # Variable para el escritor de video
+        self.video_writer_right = None  # Variable para el escritor de video
         self.__launch_dialog()
 
     def __launch_dialog(self):
@@ -53,9 +53,9 @@ class App(tk.Tk):
     
     def start_camera(self):        
         list_size = self.combo.get().split("x")
-        camera_width = int(list_size[0])
+        self.camera_width = int(list_size[0])
         camera_height = int(list_size[1])
-        print(camera_width, camera_height)
+        print(self.camera_width, camera_height)
 
         # Ocultar los widgets de configuración
         self.first_panel.destroy()
@@ -64,16 +64,21 @@ class App(tk.Tk):
             self, width=640, height=480, padx=10)
         self.center_panel.pack(expand=True, anchor=tk.N)
 
-        # Mostrar la visualización de la cámara
+        # Configuracion de cámara
+        print("Iniciando configuración de cámara...")
         self.vid = cv2.VideoCapture(0)
-        # self.canvas = tk.Canvas(self, width=camera_width, height=camera_height)
-        self.canvas = tk.Canvas(self.center_panel, width=self.vid.get(
-            cv2.CAP_PROP_FRAME_WIDTH), height=self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.vid.set(cv2.CAP_PROP_FRAME_WIDTH, self.camera_width*2)
+        print("Configuración termianda!", int(self.vid.get(3)) // 2, "x", int(self.vid.get(4)), self.vid.get(cv2.CAP_PROP_FPS))
+
+        # Mostrar la visualización de la cámara
+        self.canvas = tk.Canvas(self.center_panel, width=self.camera_width, height=camera_height)
+        # self.canvas = tk.Canvas(self.center_panel, width=self.vid.get(
+        #     cv2.CAP_PROP_FRAME_WIDTH), height=self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.canvas.grid(row=0, column=0)
 
-        # self.canvas_2 = tk.Canvas(self, width=camera_width, height=camera_height)
-        self.canvas_2 = tk.Canvas(self.center_panel, width=self.vid.get(
-            cv2.CAP_PROP_FRAME_WIDTH), height=self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.canvas_2 = tk.Canvas(self.center_panel, width=self.camera_width, height=camera_height)
+        # self.canvas_2 = tk.Canvas(self.center_panel, width=self.vid.get(
+        #     cv2.CAP_PROP_FRAME_WIDTH), height=self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.canvas_2.grid(row=0, column=1)
 
         self.update_camera()
@@ -97,34 +102,39 @@ class App(tk.Tk):
         ret, frame = self.vid.read()
         if ret:
             # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-            now = datetime.now()
-            date_time = now.strftime(PATH_SAVE + "imgs/%H_%M_%S_%d_%m_%Y")
-            file_name = f"{date_time}_IMG"
-            # cv2.imwrite(file_name + "_LEFT.jpg", left)
-            # cv2.imwrite(file_name + "_RIGHT.jpg", right)
+            frame, frame_left, frame_right = process(frame, self.camera_width)
+            file_name = get_name()
 
             print(f"Image captured and saved as {file_name}")
             cv2.imwrite(file_name + ".jpg", frame)
+            cv2.imwrite(file_name + "_LEFT.jpg", frame_left)
+            cv2.imwrite(file_name + "_RIGHT.jpg", frame_right)
             print("Snapshot saved as snapshot.png")
 
     def update_camera(self):
         ret, frame = self.vid.read()
         if ret:
-            # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            self.photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
-            self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
-            self.canvas_2.create_image(0, 0, image=self.photo, anchor=tk.NW)
+            fr_tmp, frame_left, frame_right = process(frame, self.camera_width)
+
+            self.photo_right = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame_right, cv2.COLOR_BGR2RGB)))
+            self.photo_left = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame_left, cv2.COLOR_BGR2RGB)))
+            self.canvas.create_image(0, 0, image=self.photo_right, anchor=tk.NW)
+            self.canvas_2.create_image(0, 0, image=self.photo_left, anchor=tk.NW)
 
             # Si se debe grabar video, guarda el fotograma en el archivo de video
             if self.record_video:
-                if self.video_writer is None:
+                if self.video_writer_left is None or self.video_writer_right is  None:
+                    file_name = get_name(0)
+                    print(file_name, self.camera_width, frame.shape[0])
                     # Crea el escritor de video si aún no se ha creado
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-                    self.video_writer = cv2.VideoWriter('output.avi', fourcc, 20.0, (frame.shape[1], frame.shape[0]))
+                    self.video_writer_left = cv2.VideoWriter(file_name + '_LEFT.avi', fourcc, 20.0, (self.camera_width, frame.shape[0]))
+                    self.video_writer_right = cv2.VideoWriter(file_name + '_RIGHT.avi', fourcc, 20.0, (self.camera_width, frame.shape[0]))
+                    
 
                 # Escribe el fotograma en el archivo de video
-                self.video_writer.write(frame)
+                self.video_writer_left.write(frame_left)
+                self.video_writer_right.write(frame_right)
 
         self.after_id = self.after(10, self.update_camera) #10 milisegundos
 
@@ -140,9 +150,11 @@ class App(tk.Tk):
             self.after_cancel(self.after_id)
 
         # Detener la grabación de video si está en curso
-        if self.video_writer is not None:
-            self.video_writer.release()
-            self.video_writer = None
+        if self.video_writer_left is not None or self.video_writer_right is not None:
+            self.video_writer_left.release()
+            self.video_writer_right.release()
+            self.video_writer_left = None
+            self.video_writer_right = None
             self.record_video = False
 
         # Volver a mostrar los widgets de configuración

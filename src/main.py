@@ -41,12 +41,13 @@ fps = cap.get(cv.CAP_PROP_FPS)
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
-    frame = cv.rotate(frame, cv.ROTATE_180)
     # if frame is read correctly ret is True
     if not ret:
         print("Can't receive frame (stream end?). Exiting ...")
         break
 
+    frame = cv.rotate(frame, cv.ROTATE_180)
+    
     # print(frame.shape)
     left = frame[:, :frame_width]
     right = frame[:, frame_width:]
