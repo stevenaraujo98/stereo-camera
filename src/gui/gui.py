@@ -94,8 +94,10 @@ class App(tk.Tk):
             final_height = int(self.screen_height * self.scale_factor)
 
             self.is_necesary_redi = True
+
             print("Resolucion para el canvas", final_width, final_height)
-            self.canvas = tk.Canvas(self.center_panel, width=final_width, height=final_height)
+            ## RESOLUCION DE CANVAS MAL, ERROR
+            self.canvas = tk.Canvas(self.center_panel, width=final_width // 2, height=final_height)
             self.canvas_2 = tk.Canvas(self.center_panel, width=final_width // 2, height=final_height)
         else:
             self.canvas = tk.Canvas(self.center_panel, width=self.camera_width, height=camera_height)
