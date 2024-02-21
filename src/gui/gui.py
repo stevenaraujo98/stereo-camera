@@ -89,19 +89,21 @@ class App(tk.Tk):
 
         if(int(self.vid.get(3)) >= self.screen_width or int(self.vid.get(4)) >= self.screen_height):
             self.scale_factor = min(self.screen_width / int(self.vid.get(3)), self.screen_height / int(self.vid.get(4))) * self.reduction_factor
+            # Calcula el tamaño final del fotograma después de la redimensión
+            final_width = int(self.screen_width * self.scale_factor)
+            final_height = int(self.screen_height * self.scale_factor)
+
             self.is_necesary_redi = True
+            print("Resolucion para el canvas", final_width, final_height)
+            self.canvas = tk.Canvas(self.center_panel, width=final_width, height=final_height)
+            self.canvas_2 = tk.Canvas(self.center_panel, width=final_width // 2, height=final_height)
+        else:
+            self.canvas = tk.Canvas(self.center_panel, width=self.camera_width, height=camera_height)
+            self.canvas_2 = tk.Canvas(self.center_panel, width=self.camera_width, height=camera_height)
 
         # Mostrar la visualización de la cámara
-        self.canvas = tk.Canvas(self.center_panel, width=self.camera_width, height=camera_height)
-        # self.canvas = tk.Canvas(self.center_panel, width=self.vid.get(
-        #     cv2.CAP_PROP_FRAME_WIDTH), height=self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.canvas.grid(row=0, column=0)
-
-        self.canvas_2 = tk.Canvas(self.center_panel, width=self.camera_width, height=camera_height)
-        # self.canvas_2 = tk.Canvas(self.center_panel, width=self.vid.get(
-        #     cv2.CAP_PROP_FRAME_WIDTH), height=self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.canvas_2.grid(row=0, column=1)
-
         self.update_camera()
 
         self.btn_snapshot = tk.Button(
@@ -139,7 +141,7 @@ class App(tk.Tk):
             
             if self.is_necesary_redi:
                 frame_right_tmp = cv2.resize(frame_right, None, fx=self.scale_factor, fy=self.scale_factor, interpolation=cv2.INTER_AREA)
-                frame_left_tmp = cv2.resize(frame_right, None, fx=self.scale_factor, fy=self.scale_factor, interpolation=cv2.INTER_AREA)
+                frame_left_tmp = cv2.resize(frame_left, None, fx=self.scale_factor, fy=self.scale_factor, interpolation=cv2.INTER_AREA)
                 self.photo_right = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame_right_tmp, cv2.COLOR_BGR2RGB)))
                 self.photo_left = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame_left_tmp, cv2.COLOR_BGR2RGB)))
             else:
@@ -168,6 +170,7 @@ class App(tk.Tk):
     def return_to_config(self):
         # Ocultar los widgets de configuración
         self.center_panel.destroy()
+        self.is_necesary_redi = False
         
         # Detener la visualización de la cámara
         if self.vid and self.vid.isOpened():
@@ -183,7 +186,6 @@ class App(tk.Tk):
             self.video_writer_left = None
             self.video_writer_right = None
             self.record_video = False
-            self.is_necesary_redi = False
 
         # Volver a mostrar los widgets de configuración
         self.__launch_dialog()
