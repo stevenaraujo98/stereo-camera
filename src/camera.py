@@ -19,3 +19,13 @@ def get_name(path_robot, is_img = 1):
         str_time = "videos/" + str_time + "_VID"
 
     return f"{PATH_SAVE  + path_robot}/{str_time}"
+
+def resize_resolution(frame):
+    # Redimensiona el fotograma si su tamaño es mayor que el tamaño del monitor
+    if int(cap.get(3)) > screen_width or frame_height_one_len > screen_height:
+        # Calcula el factor de escala
+        scale_factor = min(screen_width / int(cap.get(3)), screen_height / frame_height_one_len)
+        print(scale_factor)
+        is_necesary_redi = True
+    dim = ()
+    return cv.resize(frame, dim, interpolation = cv.INTER_AREA)
