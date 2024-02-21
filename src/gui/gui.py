@@ -4,6 +4,7 @@ import cv2
 import PIL.Image
 import PIL.ImageTk
 from camera import process, get_name
+from utils.consts import LIST_NAME_ROBOTS, LIST_RESOLUTIONS
 
 class App(tk.Tk):
     def __init__(self, video_source=0):
@@ -35,13 +36,20 @@ class App(tk.Tk):
         self.texto2 = tk.Label(self.first_panel, text="Resolución:", font=12)
         self.texto2.grid(row=3, column=0, padx=5, pady=5, sticky="e")
 
-        self.combo = ttk.Combobox(self.first_panel, state="readonly", values=["1920x1080", "1280x720", "800x600", "640x480", "320x240"], font=12)
-        self.combo.set("1920x1080")
-        self.combo.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+        self.combo_resolucion = ttk.Combobox(self.first_panel, state="readonly", values=LIST_RESOLUTIONS, font=12)
+        self.combo_resolucion.set(LIST_RESOLUTIONS[0])
+        self.combo_resolucion.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+
+        self.texto2 = tk.Label(self.first_panel, text="Robot:", font=12)
+        self.texto2.grid(row=4, column=0, padx=5, pady=5, sticky="e")
+
+        self.combo_robot = ttk.Combobox(self.first_panel, state="readonly", values=LIST_NAME_ROBOTS, font=12)
+        self.combo_robot.set(LIST_NAME_ROBOTS[0])
+        self.combo_robot.grid(row=4, column=1, padx=5, pady=5, sticky="w")
 
         self.checkbox_value = tk.BooleanVar(self.first_panel)
         self.checkbox = tk.Checkbutton(self.first_panel, text="Grabar video", variable=self.checkbox_value, command=self.checkbox_clicked, font=12, padx=0)
-        self.checkbox.grid(row=4, column=0, columnspan=2, pady=5, sticky="w")
+        self.checkbox.grid(row=5, column=0, columnspan=2, pady=5, sticky="w")
 
         self.button = tk.Button(
             self.first_panel,
@@ -50,14 +58,16 @@ class App(tk.Tk):
             command=self.start_camera,
             font=12
         )
-        self.button.grid(row=5, column=0, columnspan=2, padx=5, pady=5)
+        self.button.grid(row=6, column=0, columnspan=2, padx=5, pady=5)
         
     def checkbox_clicked(self):
         self.record_video = self.checkbox_value.get()
         print("Grabar video:", self.record_video)
     
     def start_camera(self):        
-        list_size = self.combo.get().split("x")
+        list_size = self.combo_resolucion.get().split("x")
+        self.path_robot = self.combo_robot.get()
+        print("Robot:", self.path_robot)
         self.camera_width = int(list_size[0])
         camera_height = int(list_size[1])
         print(self.camera_width, camera_height)
@@ -108,7 +118,7 @@ class App(tk.Tk):
         if ret:
             # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame, frame_left, frame_right = process(frame, self.camera_width)
-            file_name = get_name()
+            file_name = get_name(self.path_robot)
 
             print(f"Image captured and saved as {file_name}")
             cv2.imwrite(file_name + ".jpg", frame)
@@ -129,13 +139,12 @@ class App(tk.Tk):
             # Si se debe grabar video, guarda el fotograma en el archivo de video
             if self.record_video:
                 if self.video_writer_left is None or self.video_writer_right is  None:
-                    file_name = get_name(0)
+                    file_name = get_name(self.path_robot, 0)
                     print(file_name, self.camera_width, frame.shape[0])
                     # Crea el escritor de video si aún no se ha creado
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
                     self.video_writer_left = cv2.VideoWriter(file_name + '_LEFT.avi', fourcc, 20.0, (self.camera_width, frame.shape[0]))
                     self.video_writer_right = cv2.VideoWriter(file_name + '_RIGHT.avi', fourcc, 20.0, (self.camera_width, frame.shape[0]))
-                    
 
                 # Escribe el fotograma en el archivo de video
                 self.video_writer_left.write(frame_left)

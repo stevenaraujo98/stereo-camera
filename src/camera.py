@@ -10,7 +10,7 @@ def process(frame, frame_width):
 
     return frame, left, right
 
-def get_name(is_img = 1):
+def get_name(path_robot, is_img = 1):
     now = datetime.now()
     str_time = now.strftime("%H_%M_%S_%d_%m_%Y")
     if is_img:
@@ -18,4 +18,4 @@ def get_name(is_img = 1):
     else:
         str_time = "videos/" + str_time + "_VID"
 
-    return f"{PATH_SAVE + str_time}"
+    return f"{PATH_SAVE  + path_robot}/{str_time}"
