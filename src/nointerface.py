@@ -17,9 +17,9 @@ reduction_factor = 0.8  # ajustar este valor de preferencia
 is_necesary_redi = False
 capturing = False
 videoRecording = False
-CONST_WIDTH_BOTH_LENS = 1920*2  # 3840
+# CONST_WIDTH_BOTH_LENS = 1920*2  # 3840
 # CONST_WIDTH_BOTH_LENS = 1280*2  # 2560
-# CONST_WIDTH_BOTH_LENS = 800*2  # 1600
+CONST_WIDTH_BOTH_LENS = 800*2  # 1600
 # CONST_WIDTH_BOTH_LENS = 640*2  # 1280
 # CONST_WIDTH_BOTH_LENS = 320*2  # 640
 # CONST_HEIGHT = 1080 # 480
@@ -53,8 +53,9 @@ frame_height_one_len = int(cap.get(4))
 size_one_len = (frame_width_one_len, frame_height_one_len)
 fps = cap.get(cv.CAP_PROP_FPS)
 
+print(int(cap.get(3)), screen_width, frame_height_one_len, screen_height)
 # Redimensiona el fotograma si su tamaño es mayor que el tamaño del monitor
-if int(cap.get(3)) > screen_width or frame_height_one_len > screen_height:
+if int(cap.get(3)) >= screen_width or frame_height_one_len >= screen_height:
     # Calcula el factor de escala
     scale_factor = min(screen_width / int(cap.get(3)), screen_height / frame_height_one_len) * reduction_factor
     print(scale_factor)

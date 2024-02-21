@@ -18,6 +18,8 @@ class App(tk.Tk):
         self.record_video = False  # Variable para indicar si se debe grabar video
         self.video_writer_left = None  # Variable para el escritor de video
         self.video_writer_right = None  # Variable para el escritor de video
+        self.is_necesary_redi = False
+        self.reduction_factor = 0.8  # ajustar este valor de preferencia
         self.__launch_dialog()
 
     def __launch_dialog(self):
@@ -85,6 +87,10 @@ class App(tk.Tk):
         self.vid.set(cv2.CAP_PROP_FRAME_WIDTH, self.camera_width*2)
         print("Configuración termianda!", int(self.vid.get(3)) // 2, "x", int(self.vid.get(4)), self.vid.get(cv2.CAP_PROP_FPS))
 
+        if(int(self.vid.get(3)) >= self.screen_width or int(self.vid.get(4)) >= self.screen_height):
+            self.scale_factor = min(self.screen_width / int(self.vid.get(3)), self.screen_height / int(self.vid.get(4))) * self.reduction_factor
+            self.is_necesary_redi = True
+
         # Mostrar la visualización de la cámara
         self.canvas = tk.Canvas(self.center_panel, width=self.camera_width, height=camera_height)
         # self.canvas = tk.Canvas(self.center_panel, width=self.vid.get(
@@ -130,9 +136,16 @@ class App(tk.Tk):
         ret, frame = self.vid.read()
         if ret:
             fr_tmp, frame_left, frame_right = process(frame, self.camera_width)
-
-            self.photo_right = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame_right, cv2.COLOR_BGR2RGB)))
-            self.photo_left = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame_left, cv2.COLOR_BGR2RGB)))
+            
+            if self.is_necesary_redi:
+                frame_right_tmp = cv2.resize(frame_right, None, fx=self.scale_factor, fy=self.scale_factor, interpolation=cv2.INTER_AREA)
+                frame_left_tmp = cv2.resize(frame_right, None, fx=self.scale_factor, fy=self.scale_factor, interpolation=cv2.INTER_AREA)
+                self.photo_right = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame_right_tmp, cv2.COLOR_BGR2RGB)))
+                self.photo_left = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame_left_tmp, cv2.COLOR_BGR2RGB)))
+            else:
+                self.photo_right = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame_right, cv2.COLOR_BGR2RGB)))
+                self.photo_left = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame_left, cv2.COLOR_BGR2RGB)))
+            
             self.canvas.create_image(0, 0, image=self.photo_right, anchor=tk.NW)
             self.canvas_2.create_image(0, 0, image=self.photo_left, anchor=tk.NW)
 
@@ -170,6 +183,7 @@ class App(tk.Tk):
             self.video_writer_left = None
             self.video_writer_right = None
             self.record_video = False
+            self.is_necesary_redi = False
 
         # Volver a mostrar los widgets de configuración
         self.__launch_dialog()
