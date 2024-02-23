@@ -12,3 +12,12 @@ ELP 4MP Dual Lens USB using OpenCV, Open Pose
 w izquierda
 n centro
 e derecha
+
+## Ejecucion Jetson
+python3 src/jetson.py ROBOT 
+
+### ejemplo:
+- python3 src/jetson.py reachy
+- python3 src/jetson.py rosmasterx3plus
+- python3 src/jetson.py stretch
+- python3 src/jetson.py waiter
