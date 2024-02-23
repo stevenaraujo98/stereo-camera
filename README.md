@@ -21,3 +21,9 @@ python3 src/jetson.py ROBOT
 - python3 src/jetson.py rosmasterx3plus
 - python3 src/jetson.py stretch
 - python3 src/jetson.py waiter
+
+### ejemplo FPS:
+- python3 src/jetson.py reachy 10
+- python3 src/jetson.py rosmasterx3plus 10
+- python3 src/jetson.py stretch 10
+- python3 src/jetson.py waiter 10

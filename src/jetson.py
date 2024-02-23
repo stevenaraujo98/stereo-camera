@@ -24,6 +24,10 @@ def visualize(image, box_color=(0, 255, 0), text_color=(0, 0, 255), fps=None):
 # Comprobación de seguridad, ejecutar sólo si se reciben 2 argumentos reales
 if len(sys.argv) == 2:
     robot_selected = sys.argv[1]
+    fps_selected = "10"
+elif len(sys.argv) == 2:
+    robot_selected = sys.argv[1]
+    fps_selected = sys.argv[2]
 else:
     print("Error - Introduce los argumentos correctamente")
     print('Ejemplo: python3 src/jetson.py stretch')
@@ -109,17 +113,17 @@ while True:
         salida_R.write(right)
 
 
-    print("Capturing Video...")
     if start_capturing:
+        print("Starting video capture...", float(fps_selected))
         videoRecording = not videoRecording
         start_capturing = not start_capturing
         now = datetime.now()
         date_time = now.strftime(path_save + "videos/%H_%M_%S_%d_%m_%Y")
         file_name = f"{date_time}_VIDEO"
         salida_L = cv.VideoWriter(
-            file_name + '_LEFT.avi', cv.VideoWriter_fourcc(*'XVID'), 30.0, (frame.shape[1]//2, frame.shape[0]))
+            file_name + '_LEFT.avi', cv.VideoWriter_fourcc(*'XVID'), float(fps_selected), (frame.shape[1]//2, frame.shape[0]))
         salida_R = cv.VideoWriter(
-            file_name + '_RIGHT.avi', cv.VideoWriter_fourcc(*'XVID'), 30.0, (frame.shape[1]//2, frame.shape[0]))
+            file_name + '_RIGHT.avi', cv.VideoWriter_fourcc(*'XVID'), float(fps_selected), (frame.shape[1]//2, frame.shape[0]))
 
     count = 1
 
