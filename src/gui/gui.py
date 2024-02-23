@@ -4,7 +4,7 @@ import cv2
 import PIL.Image
 import PIL.ImageTk
 from camera import process, get_name
-from utils.consts import LIST_NAME_ROBOTS, LIST_RESOLUTIONS
+from utils.consts import LIST_NAME_ROBOTS, LIST_RESOLUTIONS, LIST_FPS
 
 class App(tk.Tk):
     def __init__(self, video_source=0):
@@ -32,45 +32,53 @@ class App(tk.Tk):
         self.title2 = tk.Label(self.first_panel, text="STEREO VISION", font=('Helvetica', 20, 'bold'), fg="#C42E0B")
         self.title2.grid(row=1, column=0, columnspan=2, padx=5, pady=10)
 
-        self.texto1 = tk.Label(self.first_panel, text="Configuración de cámara", font=16)
+        self.texto1 = tk.Label(self.first_panel, text="Camera settings", font=16)
         self.texto1.grid(row=2, column=0, columnspan=2, padx=5, pady=10)
 
-        self.texto2 = tk.Label(self.first_panel, text="Resolución:", font=12)
-        self.texto2.grid(row=3, column=0, padx=5, pady=5, sticky="e")
+        self.texto2 = tk.Label(self.first_panel, text="Resolution:", font=12)
+        self.texto2.grid(row=3, column=0, padx=5, pady=5, sticky="w")
 
         self.combo_resolucion = ttk.Combobox(self.first_panel, state="readonly", values=LIST_RESOLUTIONS, font=12)
         self.combo_resolucion.set(LIST_RESOLUTIONS[0])
         self.combo_resolucion.grid(row=3, column=1, padx=5, pady=5, sticky="w")
 
+        self.texto3 = tk.Label(self.first_panel, text="FPS:", font=12)
+        self.texto3.grid(row=4, column=0, padx=5, pady=5, sticky="w")
+
+        self.combo_fps = ttk.Combobox(self.first_panel, state="readonly", values=LIST_FPS, font=12)
+        self.combo_fps.set(LIST_FPS[1])
+        self.combo_fps.grid(row=4, column=1, padx=5, pady=5, sticky="w")
+
         self.texto2 = tk.Label(self.first_panel, text="Robot:", font=12)
-        self.texto2.grid(row=4, column=0, padx=5, pady=5, sticky="e")
+        self.texto2.grid(row=5, column=0, padx=5, pady=5, sticky="w")
 
         self.combo_robot = ttk.Combobox(self.first_panel, state="readonly", values=LIST_NAME_ROBOTS, font=12)
         self.combo_robot.set(LIST_NAME_ROBOTS[0])
-        self.combo_robot.grid(row=4, column=1, padx=5, pady=5, sticky="w")
+        self.combo_robot.grid(row=5, column=1, padx=5, pady=5, sticky="w")
 
         self.checkbox_value = tk.BooleanVar(self.first_panel)
-        self.checkbox = tk.Checkbutton(self.first_panel, text="Grabar video", variable=self.checkbox_value, command=self.checkbox_clicked, font=12, padx=0)
-        self.checkbox.grid(row=5, column=0, columnspan=2, pady=5, sticky="w")
+        self.checkbox = tk.Checkbutton(self.first_panel, text="Record a video", variable=self.checkbox_value, command=self.checkbox_clicked, font=12, padx=0)
+        self.checkbox.grid(row=6, column=0, columnspan=2, pady=5, sticky="w")
 
         self.button = tk.Button(
             self.first_panel,
-            text="Aceptar",
+            text="Accept",
             cursor="hand2",
             command=self.start_camera,
             font=12
         )
-        self.button.grid(row=6, column=0, columnspan=2, padx=5, pady=5)
+        self.button.grid(row=7, column=0, columnspan=2, padx=5, pady=5)
         
     def checkbox_clicked(self):
         self.record_video = self.checkbox_value.get()
         print("Grabar video:", self.record_video)
     
-    def start_camera(self):        
+    def start_camera(self):
         list_size = self.combo_resolucion.get().split("x")
         self.path_robot = self.combo_robot.get()
         print("Robot:", self.path_robot)
         self.camera_width = int(list_size[0])
+        self.path_fps = float(self.combo_fps.get())
         camera_height = int(list_size[1])
         print(self.camera_width, camera_height)
 
@@ -81,47 +89,61 @@ class App(tk.Tk):
             self, width=640, height=480, padx=10)
         self.center_panel.pack(expand=True, anchor=tk.N)
 
+        # Textos
+        self.title1 = tk.Label(self.center_panel, text="ROBOT VISION SYSTEM", font=('Helvetica', 24, 'bold'), fg='#EA6749')
+        self.title1.grid(row=0, column=0, columnspan=2, padx=5, pady=10)
+        self.title2 = tk.Label(self.center_panel, text="STEREO VISION", font=('Helvetica', 20, 'bold'), fg="#C42E0B")
+        self.title2.grid(row=1, column=0, columnspan=2, padx=5, pady=10)
+
+        self.texto1 = tk.Label(self.center_panel, text="Camera settings", font=16)
+        self.texto1.grid(row=3, column=0, columnspan=2, padx=5, pady=10)
+
         # Configuracion de cámara
         print("Iniciando configuración de cámara...")
         self.vid = cv2.VideoCapture(0)
         self.vid.set(cv2.CAP_PROP_FRAME_WIDTH, self.camera_width*2)
-        print("Configuración termianda!", int(self.vid.get(3)) // 2, "x", int(self.vid.get(4)), self.vid.get(cv2.CAP_PROP_FPS))
+        print("Configuración terminada!", int(self.vid.get(3)) // 2, "x", int(self.vid.get(4)), self.vid.get(cv2.CAP_PROP_FPS))
 
         if(int(self.vid.get(3)) >= self.screen_width or int(self.vid.get(4)) >= self.screen_height):
             self.scale_factor = min(self.screen_width / int(self.vid.get(3)), self.screen_height / int(self.vid.get(4))) * self.reduction_factor
             # Calcula el tamaño final del fotograma después de la redimensión
-            final_width = int(self.screen_width * self.scale_factor)
-            final_height = int(self.screen_height * self.scale_factor)
+            final_width = int(self.camera_width * self.scale_factor)
+            final_height = int(camera_height * self.scale_factor)
 
             self.is_necesary_redi = True
 
             print("Resolucion para el canvas", final_width, final_height)
             ## RESOLUCION DE CANVAS MAL, ERROR
-            self.canvas = tk.Canvas(self.center_panel, width=final_width // 2, height=final_height)
-            self.canvas_2 = tk.Canvas(self.center_panel, width=final_width // 2, height=final_height)
+            self.canvas = tk.Canvas(self.center_panel, width=final_width, height=final_height)
+            self.canvas_2 = tk.Canvas(self.center_panel, width=final_width, height=final_height)
         else:
             self.canvas = tk.Canvas(self.center_panel, width=self.camera_width, height=camera_height)
             self.canvas_2 = tk.Canvas(self.center_panel, width=self.camera_width, height=camera_height)
 
         # Mostrar la visualización de la cámara
-        self.canvas.grid(row=0, column=0)
-        self.canvas_2.grid(row=0, column=1)
+        self.canvas.grid(row=4, column=0)
+        self.canvas_2.grid(row=4, column=1)
         self.update_camera()
+
+        self.texto1 = tk.Label(self.center_panel, text="Left", font=16)
+        self.texto1.grid(row=5, column=0, padx=5, pady=10)
+        self.texto1 = tk.Label(self.center_panel, text="Right", font=16)
+        self.texto1.grid(row=5, column=1, padx=5, pady=10)
 
         self.btn_snapshot = tk.Button(
             self.center_panel, text="Snapshot", cursor="hand2", width=30, command=self.snapshot, font=12, bg="#f0f0f0")
-        self.btn_snapshot.grid(row=1, column=0, padx=10, pady=10)
+        self.btn_snapshot.grid(row=6, column=0, padx=10, pady=10)
 
         # Agregar botón de regreso
         self.return_button = tk.Button(
             self.center_panel,
-            text="Regresar",
+            text="Return",
             cursor="hand2", 
             width=30,
             command=self.return_to_config,
             font=12
         )
-        self.return_button.grid(row=1, column=1, padx=10, pady=10)
+        self.return_button.grid(row=6, column=1, padx=10, pady=10)
 
     def snapshot(self):
         ret, frame = self.vid.read()
@@ -131,7 +153,7 @@ class App(tk.Tk):
             file_name = get_name(self.path_robot)
 
             print(f"Image captured and saved as {file_name}")
-            cv2.imwrite(file_name + ".jpg", frame)
+            # cv2.imwrite(file_name + ".jpg", frame)
             cv2.imwrite(file_name + "_LEFT.jpg", frame_left)
             cv2.imwrite(file_name + "_RIGHT.jpg", frame_right)
             print("Snapshot saved as snapshot.png")
@@ -160,8 +182,8 @@ class App(tk.Tk):
                     print(file_name, self.camera_width, frame.shape[0])
                     # Crea el escritor de video si aún no se ha creado
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-                    self.video_writer_left = cv2.VideoWriter(file_name + '_LEFT.avi', fourcc, 20.0, (self.camera_width, frame.shape[0]))
-                    self.video_writer_right = cv2.VideoWriter(file_name + '_RIGHT.avi', fourcc, 20.0, (self.camera_width, frame.shape[0]))
+                    self.video_writer_left = cv2.VideoWriter(file_name + '_LEFT.avi', fourcc, self.path_fps, (self.camera_width, frame.shape[0]))
+                    self.video_writer_right = cv2.VideoWriter(file_name + '_RIGHT.avi', fourcc, self.path_fps, (self.camera_width, frame.shape[0]))
 
                 # Escribe el fotograma en el archivo de video
                 self.video_writer_left.write(frame_left)

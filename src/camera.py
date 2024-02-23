@@ -14,8 +14,8 @@ def get_name(path_robot, is_img = 1):
     now = datetime.now()
     str_time = now.strftime("%H_%M_%S_%d_%m_%Y")
     if is_img:
-        str_time = "imgs/" + str_time + "_IMG"
+        str_time = "images/" + str_time + "_IMG"
     else:
         str_time = "videos/" + str_time + "_VID"
 
-    return f"{PATH_SAVE  + path_robot}/{str_time}"
+    return f"{PATH_SAVE  + path_robot}/2D/{str_time}"

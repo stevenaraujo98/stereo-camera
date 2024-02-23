@@ -17,9 +17,9 @@ reduction_factor = 0.8  # ajustar este valor de preferencia
 is_necesary_redi = False
 capturing = False
 videoRecording = False
-# CONST_WIDTH_BOTH_LENS = 1920*2  # 3840
+CONST_WIDTH_BOTH_LENS = 1920*2  # 3840
 # CONST_WIDTH_BOTH_LENS = 1280*2  # 2560
-CONST_WIDTH_BOTH_LENS = 800*2  # 1600
+# CONST_WIDTH_BOTH_LENS = 800*2  # 1600
 # CONST_WIDTH_BOTH_LENS = 640*2  # 1280
 # CONST_WIDTH_BOTH_LENS = 320*2  # 640
 # CONST_HEIGHT = 1080 # 480
@@ -31,11 +31,11 @@ screen_width, screen_height = get_screen_resolution()
 """
 default y minima resolucion 320 x 240
 maxima resolucion 1920 x 1080
-FULLHD 1920 x 1080 = 3840 x 1080 => 1920
-HD     1280 × 720  = 2560 x 720  => 1280
-SD     854 × 480   = 1600 x 600  => 800
-SD     640 x 360   = 1280 x 480  => 640
-SD     426 × 240   = 640 x 240   => 320
+FULLHD 1920 x 1080 = 3840 x 1080 => 1920 x 1080
+HD     1280 × 720  = 2560 x 720  => 1280 x 720
+SD     854 × 480   = 1600 x 600  => 800 x 600
+SD     640 x 360   = 1280 x 480  => 640 x 480
+SD     426 × 240   = 640 x 240   => 320 x 240
 """
 
 cap = cv.VideoCapture(0)
@@ -61,6 +61,7 @@ if int(cap.get(3)) >= screen_width or frame_height_one_len >= screen_height:
     print(scale_factor)
     is_necesary_redi = True
 
+tm = cv.TickMeter()
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
@@ -70,6 +71,7 @@ while True:
         break
 
     frame = cv.rotate(frame, cv.ROTATE_180)
+    print(frame.shape, tm.getFPS())
 
     # print(frame.shape)
     left = frame[:, :frame_width_one_len]
@@ -106,9 +108,9 @@ while True:
             file_name = f"{date_time}_VIDEO"
             # 30.0 fps
             salida_L = cv.VideoWriter(
-                file_name + '_LEFT.avi', cv.VideoWriter_fourcc(*'XVID'), 20.0, size_one_len)
+                file_name + '_LEFT.avi', cv.VideoWriter_fourcc(*'XVID'), 5.0, size_one_len)
             salida_R = cv.VideoWriter(
-                file_name + '_RIGHT.avi', cv.VideoWriter_fourcc(*'XVID'), 20.0, size_one_len)
+                file_name + '_RIGHT.avi', cv.VideoWriter_fourcc(*'XVID'), 5.0, size_one_len)
         else:
             print("video finish")
             salida_L.release()
