@@ -25,7 +25,7 @@ def visualize(image, box_color=(0, 255, 0), text_color=(0, 0, 255), fps=None):
 if len(sys.argv) == 2:
     robot_selected = sys.argv[1]
     fps_selected = "10"
-elif len(sys.argv) == 2:
+elif len(sys.argv) == 3:
     robot_selected = sys.argv[1]
     fps_selected = sys.argv[2]
 else:
