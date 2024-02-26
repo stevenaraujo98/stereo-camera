@@ -109,7 +109,7 @@ while True:
     if is_necesary_redi:
         tmp_frame = cv.resize(frame, None, fx=scale_factor, fy=scale_factor, interpolation=cv.INTER_AREA)
         # Redimensiona el fotograma manteniendo la proporción original
-        #tmp_frame = visualize(tmp_frame, fps=tm.getFPS())
+        # tmp_frame = visualize(tmp_frame, fps=tm.getFPS())
         cv.imshow('frame', tmp_frame)
     else:
         # tmp_frame = visualize(frame, fps=tm.getFPS())
