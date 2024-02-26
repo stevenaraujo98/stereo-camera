@@ -36,7 +36,6 @@ else:
 
 # Factor adicional para reducir aún más el tamaño del video
 reduction_factor = 0.8  # ajustar este valor de preferencia
-is_necesary_redi = False
 start_capturing = True
 videoRecording = False
 # CONST_WIDTH_BOTH_LENS = 1920*2  # 3840
@@ -44,7 +43,7 @@ CONST_WIDTH_BOTH_LENS = 1280*2  # 2560
 # CONST_WIDTH_BOTH_LENS = 800*2  # 1600
 # CONST_WIDTH_BOTH_LENS = 640*2  # 1280
 # CONST_WIDTH_BOTH_LENS = 320*2  # 640
-# CONST_HEIGHT = 1080 # 480
+CONST_HEIGHT = 720 # 1080 # 480
 path_save = "./assets/" + robot_selected + "/2D/"
 
 # Obtener la resolución del monitor automáticamente
@@ -67,7 +66,7 @@ if not cap.isOpened():
 
 print("Configurando la camara")
 cap.set(cv.CAP_PROP_FRAME_WIDTH, CONST_WIDTH_BOTH_LENS)
-# cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
+cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
 # cap.set(cv.CAP_PROP_FPS, 20)
 print("Configuracin finalizada.")
 # frame_width_one_len = int(cap.get(3)) // 2
@@ -79,14 +78,7 @@ frame_height_one_len = 600
 size_one_len = (frame_width_one_len, frame_height_one_len)
 fps = cap.get(cv.CAP_PROP_FPS)
 
-print(CONST_WIDTH_BOTH_LENS, screen_width, frame_height_one_len, screen_height, fps)
-# Redimensiona el fotograma si su tamaño es mayor que el tamaño del monitor
-if CONST_WIDTH_BOTH_LENS >= screen_width or frame_height_one_len >= screen_height:
-    # Calcula el factor de escala
-    scale_factor = min(screen_width / CONST_WIDTH_BOTH_LENS, screen_height / frame_height_one_len) * reduction_factor
-    print(scale_factor)
-    is_necesary_redi = True
-
+print(CONST_WIDTH_BOTH_LENS, screen_width, frame_height_one_len, screen_height, fps, "(", int(cap.get(3)), int(cap.get(4)), ")")
 
 # cap.set(cv.CAP_PROP_BACKEND, cv.CAP_BACKEND_CUDA)
 # cap.set(cv.CAP_PROP_CUDA_DEVICE, 0)

@@ -102,6 +102,7 @@ class App(tk.Tk):
         print("Iniciando configuración de cámara...")
         self.vid = cv2.VideoCapture(0)
         self.vid.set(cv2.CAP_PROP_FRAME_WIDTH, self.camera_width*2)
+        self.vid.set(cv2.CAP_PROP_FRAME_HEIGHT, camera_height)
         print("Configuración terminada!", int(self.vid.get(3)) // 2, "x", int(self.vid.get(4)), self.vid.get(cv2.CAP_PROP_FPS))
 
         if(int(self.vid.get(3)) >= self.screen_width or int(self.vid.get(4)) >= self.screen_height):

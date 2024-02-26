@@ -40,7 +40,8 @@ CONST_WIDTH_BOTH_LENS = 1280*2  # 2560
 # CONST_WIDTH_BOTH_LENS = 800*2  # 1600
 # CONST_WIDTH_BOTH_LENS = 640*2  # 1280
 # CONST_WIDTH_BOTH_LENS = 320*2  # 640
-# CONST_HEIGHT = 1080 # 480
+CONST_HEIGHT = 720 # 1080 # 480
+
 path_save = "./assets/" + robot_selected + "/2D/"
 
 # Obtener la resolución del monitor automáticamente
@@ -63,19 +64,19 @@ if not cap.isOpened():
 
 print("Configurando la camara")
 cap.set(cv.CAP_PROP_FRAME_WIDTH, CONST_WIDTH_BOTH_LENS)
-# cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
+cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
 # cap.set(cv.CAP_PROP_FPS, 20)
 print("Configuracin finalizada.")
 # frame_width_one_len = int(cap.get(3)) // 2
 frame_width_one_len = CONST_WIDTH_BOTH_LENS // 2
 
 # frame_height_one_len = int(cap.get(4))
-frame_height_one_len = 600
+frame_height_one_len = CONST_HEIGHT
 
 size_one_len = (frame_width_one_len, frame_height_one_len)
 fps = cap.get(cv.CAP_PROP_FPS)
 
-print(CONST_WIDTH_BOTH_LENS, screen_width, frame_height_one_len, screen_height, fps)
+print(CONST_WIDTH_BOTH_LENS, screen_width, frame_height_one_len, screen_height, fps, "(", int(cap.get(3)), int(cap.get(4)), ")")
 # Redimensiona el fotograma si su tamaño es mayor que el tamaño del monitor
 if CONST_WIDTH_BOTH_LENS >= screen_width or frame_height_one_len >= screen_height:
     # Calcula el factor de escala
