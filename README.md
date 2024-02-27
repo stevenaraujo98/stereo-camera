@@ -8,10 +8,10 @@ ELP 4MP Dual Lens USB using OpenCV, Open Pose
 - pip install -r requirements.txt
 
 ## Ejecución de la interfaz de configuracion de la cámara
-python src/main.py
+- python src/main.py
 
 ## Ejecucion Jetson
-python3 src/jetson.py ROBOT 
+- python3 src/jetson.py ROBOT 
 
 ### ejemplo:
 - python3 src/jetson.py reachy
