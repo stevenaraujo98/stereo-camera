@@ -2,6 +2,7 @@ import cv2 as cv
 from datetime import datetime
 import tkinter as tk
 import sys
+from utils.consts import PATH_SAVE
 
 def get_screen_resolution():
     root = tk.Tk()
@@ -42,7 +43,7 @@ CONST_WIDTH_BOTH_LENS = 1280*2  # 2560
 # CONST_WIDTH_BOTH_LENS = 320*2  # 640
 CONST_HEIGHT = 720 # 1080 # 480
 
-path_save = "./assets/" + robot_selected + "/2D/"
+path_save_final = PATH_SAVE + robot_selected + "/2D/"
 
 # Obtener la resolución del monitor automáticamente
 screen_width, screen_height = get_screen_resolution()
@@ -136,8 +137,9 @@ while True:
         videoRecording = not videoRecording
         if videoRecording:
             now = datetime.now()
-            date_time = now.strftime(path_save + "videos/%H_%M_%S_%d_%m_%Y")
+            date_time = now.strftime(path_save_final + "videos/%H_%M_%S_%d_%m_%Y")
             file_name = f"{date_time}_VIDEO"
+            print("path save:", file_name)
             salida_L = cv.VideoWriter(
                 file_name + '_LEFT.avi', cv.VideoWriter_fourcc(*'XVID'), 30.0, (frame.shape[1]//2, frame.shape[0]))
             salida_R = cv.VideoWriter(
@@ -150,7 +152,7 @@ while True:
 
     if capturing:
         now = datetime.now()
-        date_time = now.strftime(path_save + "images/%H_%M_%S_%d_%m_%Y")
+        date_time = now.strftime(path_save_final + "images/%H_%M_%S_%d_%m_%Y")
         file_name = f"{date_time}_IMG"
         # cv.imwrite(file_name + ".jpg", frame)
         cv.imwrite(file_name + "_LEFT.jpg", left)

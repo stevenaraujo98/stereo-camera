@@ -1,6 +1,7 @@
 import cv2 as cv
 from datetime import datetime
 import tkinter as tk
+from utils.consts import PATH_SAVE
 
 def get_screen_resolution():
     root = tk.Tk()
@@ -23,7 +24,6 @@ CONST_WIDTH_BOTH_LENS = 1920*2  # 3840
 # CONST_WIDTH_BOTH_LENS = 640*2  # 1280
 # CONST_WIDTH_BOTH_LENS = 320*2  # 640
 # CONST_HEIGHT = 1080 # 480
-path_save = "./assets/"
 
 # Obtener la resolución del monitor automáticamente
 screen_width, screen_height = get_screen_resolution()
@@ -71,7 +71,7 @@ while True:
         break
 
     frame = cv.rotate(frame, cv.ROTATE_180)
-    print(frame.shape, tm.getFPS())
+    # print(frame.shape, tm.getFPS())
 
     # print(frame.shape)
     left = frame[:, :frame_width_one_len]
@@ -104,9 +104,10 @@ while True:
         videoRecording = not videoRecording
         if videoRecording:
             now = datetime.now()
-            date_time = now.strftime(path_save + "videos/%H_%M_%S_%d_%m_%Y")
+            date_time = now.strftime(PATH_SAVE + "waiter/2D/videos/%H_%M_%S_%d_%m_%Y")
             file_name = f"{date_time}_VIDEO"
             # 30.0 fps
+            print("path save:", file_name)
             salida_L = cv.VideoWriter(
                 file_name + '_LEFT.avi', cv.VideoWriter_fourcc(*'XVID'), 5.0, size_one_len)
             salida_R = cv.VideoWriter(
@@ -118,7 +119,7 @@ while True:
 
     if capturing:
         now = datetime.now()
-        date_time = now.strftime(path_save + "imgs/%H_%M_%S_%d_%m_%Y")
+        date_time = now.strftime(PATH_SAVE + "waiter/2D/images/%H_%M_%S_%d_%m_%Y")
         file_name = f"{date_time}_IMG"
         cv.imwrite(file_name + ".jpg", frame)
         cv.imwrite(file_name + "_LEFT.jpg", left)

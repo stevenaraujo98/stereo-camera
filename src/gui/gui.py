@@ -95,7 +95,7 @@ class App(tk.Tk):
         self.title2 = tk.Label(self.center_panel, text="STEREO VISION", font=('Helvetica', 20, 'bold'), fg="#C42E0B")
         self.title2.grid(row=1, column=0, columnspan=2, padx=5, pady=10)
 
-        self.texto1 = tk.Label(self.center_panel, text="Camera settings", font=16)
+        self.texto1 = tk.Label(self.center_panel, text="Show Video", font=16)
         self.texto1.grid(row=3, column=0, columnspan=2, padx=5, pady=10)
 
         # Configuracion de cámara
