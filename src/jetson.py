@@ -39,12 +39,6 @@ else:
 reduction_factor = 0.8  # ajustar este valor de preferencia
 start_capturing = True
 videoRecording = False
-# CONST_WIDTH_BOTH_LENS = 1920*2  # 3840
-CONST_WIDTH_BOTH_LENS = 1280*2  # 2560
-# CONST_WIDTH_BOTH_LENS = 800*2  # 1600
-# CONST_WIDTH_BOTH_LENS = 640*2  # 1280
-# CONST_WIDTH_BOTH_LENS = 320*2  # 640
-CONST_HEIGHT = 720 # 1080 # 480
 path_save_final = PATH_SAVE + robot_selected + "/2D/"
 
 # Obtener la resolución del monitor automáticamente
@@ -59,6 +53,11 @@ SD     854 × 480   = 1600 x 600  => 800
 SD     640 x 360   = 1280 x 480  => 640
 SD     426 × 240   = 640 x 240   => 320
 """
+# CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 1920*2, 1080  # 3840x1080
+CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 1280*2, 720  # 2560x720
+# CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 800*2, 600  # 1600x60
+# CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 640*2, 480   # 1280x480
+# CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 320*2, 240  # 640x240
 
 cap = cv.VideoCapture(0)
 if not cap.isOpened():
@@ -70,16 +69,9 @@ cap.set(cv.CAP_PROP_FRAME_WIDTH, CONST_WIDTH_BOTH_LENS)
 cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
 # cap.set(cv.CAP_PROP_FPS, 20)
 print("Configuracin finalizada.")
-# frame_width_one_len = int(cap.get(3)) // 2
-frame_width_one_len = CONST_WIDTH_BOTH_LENS // 2
 
-# frame_height_one_len = int(cap.get(4))
-frame_height_one_len = 600
-
-size_one_len = (frame_width_one_len, frame_height_one_len)
 fps = cap.get(cv.CAP_PROP_FPS)
-
-print(CONST_WIDTH_BOTH_LENS, screen_width, frame_height_one_len, screen_height, fps, "(", int(cap.get(3)), int(cap.get(4)), ")")
+print("Both lens: ", CONST_WIDTH_BOTH_LENS, "x", CONST_HEIGHT, "|| Screen size:", screen_width, "x", screen_height, "|| Open CV: (", int(cap.get(3)), int(cap.get(4)), ")", "FPS configurados", fps)
 
 # cap.set(cv.CAP_PROP_BACKEND, cv.CAP_BACKEND_CUDA)
 # cap.set(cv.CAP_PROP_CUDA_DEVICE, 0)
@@ -96,8 +88,6 @@ while True:
     frame = cv.rotate(frame, cv.ROTATE_180)
 
     # print(frame.shape)
-    # left = frame[:, :frame_width_one_len]
-    # right = frame[:, frame_width_one_len:]
     left = frame[:, :frame.shape[1]//2]
     right = frame[:, frame.shape[1]//2:]
 

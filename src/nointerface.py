@@ -2,6 +2,7 @@ import cv2 as cv
 from datetime import datetime
 import tkinter as tk
 from utils.consts import PATH_SAVE
+import time 
 
 def get_screen_resolution():
     root = tk.Tk()
@@ -18,12 +19,9 @@ reduction_factor = 0.8  # ajustar este valor de preferencia
 is_necesary_redi = False
 capturing = False
 videoRecording = False
-CONST_WIDTH_BOTH_LENS = 1920*2  # 3840
-# CONST_WIDTH_BOTH_LENS = 1280*2  # 2560
-# CONST_WIDTH_BOTH_LENS = 800*2  # 1600
-# CONST_WIDTH_BOTH_LENS = 640*2  # 1280
-# CONST_WIDTH_BOTH_LENS = 320*2  # 640
-# CONST_HEIGHT = 1080 # 480
+show_fps=True
+prev_frame_time = 0
+new_frame_time = 0
 
 # Obtener la resolución del monitor automáticamente
 screen_width, screen_height = get_screen_resolution()
@@ -37,6 +35,11 @@ SD     854 × 480   = 1600 x 600  => 800 x 600
 SD     640 x 360   = 1280 x 480  => 640 x 480
 SD     426 × 240   = 640 x 240   => 320 x 240
 """
+# CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 1920*2, 1080  # 3840x1080
+# CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 1280*2, 720  # 2560x720
+CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 800*2, 600  # 1600x60
+# CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 640*2, 480   # 1280x480
+# CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 320*2, 240  # 640x240
 
 cap = cv.VideoCapture(0)
 if not cap.isOpened():
@@ -45,15 +48,16 @@ if not cap.isOpened():
 
 print("Configurando la camara")
 cap.set(cv.CAP_PROP_FRAME_WIDTH, CONST_WIDTH_BOTH_LENS)
-# cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
-cap.set(cv.CAP_PROP_FPS, 30)
+cap.set(cv.CAP_PROP_FRAME_HEIGHT, CONST_HEIGHT)
+cap.set(cv.CAP_PROP_FPS, 60)
 print("Configuracin finalizada.")
+
 frame_width_one_len = int(cap.get(3)) // 2
 frame_height_one_len = int(cap.get(4))
 size_one_len = (frame_width_one_len, frame_height_one_len)
 fps = cap.get(cv.CAP_PROP_FPS)
 
-print(int(cap.get(3)), screen_width, frame_height_one_len, screen_height)
+print("Both lens: ", int(cap.get(3)), "x", frame_height_one_len, "|| Screen size:", screen_width, "x", screen_height, "FPS configurados", fps)
 # Redimensiona el fotograma si su tamaño es mayor que el tamaño del monitor
 if int(cap.get(3)) >= screen_width or frame_height_one_len >= screen_height:
     # Calcula el factor de escala
@@ -71,18 +75,42 @@ while True:
         break
 
     frame = cv.rotate(frame, cv.ROTATE_180)
+    tmp_frame = frame.copy()
     # print(frame.shape, tm.getFPS())
 
     # print(frame.shape)
     left = frame[:, :frame_width_one_len]
     right = frame[:, frame_width_one_len:]
 
+    if show_fps:
+        # font which we will be using to display FPS 
+        font = cv.FONT_HERSHEY_SIMPLEX 
+        # time when we finish processing for this frame 
+        new_frame_time = time.time() 
+
+        # Calculating the fps 
+
+        # fps will be number of frame processed in given time frame 
+        # since their will be most of time error of 0.001 second 
+        # we will be subtracting it to get more accurate result 
+        fps = 1/(new_frame_time-prev_frame_time) 
+        prev_frame_time = new_frame_time 
+
+        # converting the fps into integer 
+        fps = int(fps) 
+
+        # converting the fps to string so that we can display it on frame 
+        # by using putText function 
+        fps = str(fps) 
+
+        # putting the FPS count on the frame 
+        cv.putText(tmp_frame, fps, (7, 70), font, 3, (frame_width_one_len, frame_height_one_len, 0), 3, cv.LINE_AA) 
+
     # Display the resulting frame
     if is_necesary_redi:
         # Redimensiona el fotograma manteniendo la proporción original
-        cv.imshow('frame', cv.resize(frame, None, fx=scale_factor, fy=scale_factor, interpolation=cv.INTER_AREA))
-    else:
-        cv.imshow('frame', frame)
+        tmp_frame = cv.resize(tmp_frame, None, fx=scale_factor, fy=scale_factor, interpolation=cv.INTER_AREA)
+    cv.imshow('frame', tmp_frame)
         
     # cv.imshow('left', left)
     # cv.imshow('right', right)
