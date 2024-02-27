@@ -7,11 +7,8 @@ ELP 4MP Dual Lens USB using OpenCV, Open Pose
 - sudo apt-get install python3-pil python3-pil.imagetk
 - pip install -r requirements.txt
 
-
-## Grid
-w izquierda
-n centro
-e derecha
+## Ejecución de la interfaz de configuracion de la cámara
+python src/main.py
 
 ## Ejecucion Jetson
 python3 src/jetson.py ROBOT 
@@ -27,3 +24,8 @@ python3 src/jetson.py ROBOT
 - python3 src/jetson.py rosmasterx3plus 10
 - python3 src/jetson.py stretch 10
 - python3 src/jetson.py waiter 10
+
+## Grid
+w izquierda
+n centro
+e derecha
