@@ -91,11 +91,6 @@ while True:
     left = frame[:, :frame.shape[1]//2]
     right = frame[:, frame.shape[1]//2:]
 
-    if videoRecording:
-        salida_L.write(left)
-        salida_R.write(right)
-
-
     if start_capturing:
         print("Starting video capture...", float(fps_selected))
         videoRecording = not videoRecording
@@ -107,8 +102,11 @@ while True:
             file_name + '_LEFT.avi', cv.VideoWriter_fourcc(*'XVID'), float(fps_selected), (frame.shape[1]//2, frame.shape[0]))
         salida_R = cv.VideoWriter(
             file_name + '_RIGHT.avi', cv.VideoWriter_fourcc(*'XVID'), float(fps_selected), (frame.shape[1]//2, frame.shape[0]))
+    
+    if videoRecording:
+        salida_L.write(left)
+        salida_R.write(right)
 
-    count = 1
 
 salida_L.release()
 salida_R.release()

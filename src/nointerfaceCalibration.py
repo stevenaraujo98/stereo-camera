@@ -22,7 +22,6 @@ def get_screen_resolution():
 reduction_factor = 0.8  # ajustar este valor de preferencia
 is_necesary_redi = False
 capturing = False
-videoRecording = False
 show_fps=True
 prev_frame_time = 0
 new_frame_time = 0
@@ -45,8 +44,14 @@ CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 800*2, 600  # 1600x60
 # CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 640*2, 480   # 1280x480
 # CONST_WIDTH_BOTH_LENS, CONST_HEIGHT = 320*2, 240  # 640x240
 
-cap = cv.VideoCapture("database/00_25_49_24_02_2024_VID_LEFT.avi")
-capR = cv.VideoCapture("database/00_25_49_24_02_2024_VID_RIGHT.avi")
+start_capturing = True
+videoRecording = False
+robot_selected = "waiter"
+configNum = "Config1"
+fps_selected = 10
+path_save_final = PATH_SAVE + robot_selected + "/2D/"
+cap = cv.VideoCapture("database/" + robot_selected + "/2D/videos/" + configNum + "/16_35_42_26_02_2024_VID_LEFT.avi")
+capR = cv.VideoCapture("database/" + robot_selected + "/2D/videos/" + configNum + "/16_35_42_26_02_2024_VID_RIGHT.avi")
 
 if not cap.isOpened():
     print("Cannot open left camera")
@@ -88,8 +93,8 @@ while True:
     frame_combined = cv.rotate(frame_combined, cv.ROTATE_180)
     frame_left_uncalibrated = frame_combined[:,:frame_combined.shape[1]//2]
     frame_right_uncalibrated = frame_combined[:,frame_combined.shape[1]//2:]
-    cv.imshow("left uncalib", frame_left_uncalibrated)
-    cv.imshow("right uncalib", frame_right_uncalibrated)
+    # cv.imshow("left uncalib", frame_left_uncalibrated)
+    # cv.imshow("right uncalib", frame_right_uncalibrated)
     
     frame_left_calib, frame_right_calib = rectifier(frame_left_uncalibrated, frame_right_uncalibrated)
     cv.imshow("left calib", frame_left_calib)
@@ -145,8 +150,8 @@ while True:
         salida_L.write(left)
         salida_R.write(right)
 
-    ### Se detiene -------------------------------------------------------------
-    key = cv.waitKey(0)
+    ### Se detiene con 0-------------------------------------------------------------
+    key = cv.waitKey(1)
     if key == ord('q'):
         # Close
         break
@@ -172,6 +177,23 @@ while True:
             print("video finish")
             salida_L.release()
             salida_R.release()
+
+    if start_capturing:
+        print("Starting video capture...", float(fps_selected), frame.shape[1], frame.shape[0], (frameR.shape[1], frameR.shape[0]))
+        videoRecording = not videoRecording
+        start_capturing = not start_capturing
+        now = datetime.now()
+        date_time = now.strftime(path_save_final + "videos/" + configNum + "/calibrated/%H_%M_%S_%d_%m_%Y")
+        file_name = f"{date_time}_VIDEO"
+        salida_L = cv.VideoWriter(
+            file_name + '_LEFT.avi', cv.VideoWriter_fourcc(*'XVID'), float(fps_selected), (frame.shape[1], frame.shape[0]))
+        salida_R = cv.VideoWriter(
+            file_name + '_RIGHT.avi', cv.VideoWriter_fourcc(*'XVID'), float(fps_selected), (frameR.shape[1], frameR.shape[0]))
+        
+    if videoRecording:
+        salida_L.write(cv.rotate(frame_left_calib, cv.ROTATE_180))
+        salida_R.write(cv.rotate(frame_right_calib, cv.ROTATE_180))
+
 
     if capturing:
         now = datetime.now()
