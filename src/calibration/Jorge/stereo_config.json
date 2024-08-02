@@ -1,0 +1,34 @@
+{
+    "left_camera": {
+        "idx": 0,
+        "fpx": 598.9262531882837,
+        "center": [
+            931.4585571289062,
+            588.8515167236328
+        ],
+        "resolution": [
+            3840,
+            1080
+        ],
+        "fps": 60
+    },
+    "right_camera": {
+        "idx": 0,
+        "fpx": 598.9262531882837,
+        "center": [
+            931.4585571289062,
+            588.8515167236328
+        ],
+        "resolution": [
+            3840,
+            1080
+        ],
+        "fps": 60
+    },
+    "separation": 5.8,
+    "stereo_map_file": "./dataset_generation/stereoMap.xml",
+    "depth_to_pixel_size": 0.001315666666666666,
+    "show_images": true,
+    "save_images": false,
+    "save_path": "./videos/"
+}

@@ -96,7 +96,7 @@ while True:
         videoRecording = not videoRecording
         start_capturing = not start_capturing
         now = datetime.now()
-        date_time = now.strftime(path_save_final + "videos/%H_%M_%S_%d_%m_%Y")
+        date_time = now.strftime(path_save_final + "videos/Config2/%H_%M_%S_%d_%m_%Y")
         file_name = f"{date_time}_VIDEO"
         salida_L = cv.VideoWriter(
             file_name + '_LEFT.avi', cv.VideoWriter_fourcc(*'XVID'), float(fps_selected), (frame.shape[1]//2, frame.shape[0]))

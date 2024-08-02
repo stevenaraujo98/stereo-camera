@@ -88,7 +88,7 @@ class App(tk.Tk):
         self.camera_width = int(list_size[0])
         self.path_fps = float(self.combo_fps.get())
         camera_height = int(list_size[1])
-        print(self.camera_width, camera_height)
+        print("Selected", self.camera_width, camera_height)
 
         # Ocultar los widgets de configuración
         self.first_panel.destroy()
@@ -113,6 +113,10 @@ class App(tk.Tk):
         print("Iniciando configuración de cámara...")
         self.vid = cv2.VideoCapture(0)
         self.vid.set(cv2.CAP_PROP_FRAME_WIDTH, self.camera_width*2)
+        self.vid.set(cv2.CAP_PROP_FRAME_HEIGHT, camera_height)
+        self.vid.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
+        self.vid.set(cv2.CAP_PROP_FPS, self.path_fps)
+
         print("Configuración terminada!", int(self.vid.get(3)) // 2,
               "x", int(self.vid.get(4)), self.vid.get(cv2.CAP_PROP_FPS))
 
