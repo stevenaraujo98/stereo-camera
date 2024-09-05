@@ -146,9 +146,9 @@ class App(tk.Tk):
         self.canvas_2.grid(row=4, column=1)
         self.update_camera()
 
-        self.texto1 = tk.Label(self.center_panel, text="Left", font=16)
-        self.texto1.grid(row=5, column=0, padx=5, pady=10)
         self.texto1 = tk.Label(self.center_panel, text="Right", font=16)
+        self.texto1.grid(row=5, column=0, padx=5, pady=10)
+        self.texto1 = tk.Label(self.center_panel, text="Left", font=16)
         self.texto1.grid(row=5, column=1, padx=5, pady=10)
 
         self.btn_snapshot = tk.Button(

@@ -8,6 +8,9 @@ def process(frame, frame_width):
     left = frame[:, :frame_width]
     right = frame[:, frame_width:]
 
+    right = cv.flip(right, 1)
+    left = cv.flip(left, 1)
+
     return frame, left, right
 
 def get_name(path_robot, is_img = 1):
