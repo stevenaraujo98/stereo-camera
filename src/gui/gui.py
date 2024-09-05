@@ -190,15 +190,22 @@ class App(tk.Tk):
                     frame_right, None, fx=self.scale_factor, fy=self.scale_factor, interpolation=cv2.INTER_AREA)
                 frame_left_tmp = cv2.resize(
                     frame_left, None, fx=self.scale_factor, fy=self.scale_factor, interpolation=cv2.INTER_AREA)
+                
+                frame_right_tmp = cv2.flip(frame_right_tmp, 1)
+                frame_left_tmp = cv2.flip(frame_left_tmp, 1)
+
                 self.photo_right = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(
                     cv2.cvtColor(frame_right_tmp, cv2.COLOR_BGR2RGB)))
                 self.photo_left = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(
                     cv2.cvtColor(frame_left_tmp, cv2.COLOR_BGR2RGB)))
             else:
+                frame_right_tmp = cv2.flip(frame_right, 1)
+                frame_left_tmp = cv2.flip(frame_left, 1)
+
                 self.photo_right = PIL.ImageTk.PhotoImage(
-                    image=PIL.Image.fromarray(cv2.cvtColor(frame_right, cv2.COLOR_BGR2RGB)))
+                    image=PIL.Image.fromarray(cv2.cvtColor(frame_right_tmp, cv2.COLOR_BGR2RGB)))
                 self.photo_left = PIL.ImageTk.PhotoImage(
-                    image=PIL.Image.fromarray(cv2.cvtColor(frame_left, cv2.COLOR_BGR2RGB)))
+                    image=PIL.Image.fromarray(cv2.cvtColor(frame_left_tmp, cv2.COLOR_BGR2RGB)))
 
             self.canvas.create_image(
                 0, 0, image=self.photo_right, anchor=tk.NW)
